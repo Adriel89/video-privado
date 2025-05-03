@@ -9,14 +9,20 @@
       max-width: 800px;
       margin: 0 auto;
       padding: 20px;
+      text-align: center; /* Centraliza o texto e elementos inline */
     }
     #video-container {
       display: none;
-      margin-top: 20px;
+      margin: 20px auto; /* Centraliza o container */
+      width: fit-content; /* Ajusta a largura ao conteúdo */
     }
     input, button {
       padding: 8px;
       margin: 5px 0;
+    }
+    video {
+      display: block; /* Remove espaço extra abaixo do vídeo */
+      margin: 0 auto; /* Centraliza o vídeo dentro do container */
     }
   </style>
 </head>
@@ -41,15 +47,4 @@
 
     function verificarAcesso() {
       const email = document.getElementById("email").value.trim().toLowerCase();
-      const videoContainer = document.getElementById("video-container");
-      
-      if (emailsAutorizados.includes(email)) {
-        videoContainer.style.display = "block";
-      } else {
-        alert("❌ Acesso negado. Este e-mail não está autorizado.");
-        videoContainer.style.display = "none";
-      }
-    }
-  </script>
-</body>
-</html>
+      const videoContainer = document.getElementById("video-container
