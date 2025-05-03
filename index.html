@@ -3,13 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Vídeo Privado</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    #video-container {
+      display: none;
+      margin-top: 20px;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px 0;
+    }
+  </style>
 </head>
 <body>
-  <h2>🔐 Acesso ao vídeo</h2>
+  <h2>🔐 Acesso ao Vídeo Privado</h2>
   <input type="email" id="email" placeholder="Digite seu e-mail autorizado">
-  <button onclick="verificar()">Entrar</button>
+  <button onclick="verificarAcesso()">Acessar Vídeo</button>
 
-  <div id="video" style="display:none; margin-top:20px;">
+  <div id="video-container">
     <video width="640" height="360" controls>
       <source src="videot.mp4" type="video/mp4">
       Seu navegador não suporta vídeo HTML5.
@@ -17,14 +33,21 @@
   </div>
 
   <script>
-    const emailsAutorizados = ["teste@email.com", "exemplo@gmail.com"];
+    const emailsAutorizados = [
+      "teste@email.com", 
+      "exemplo@gmail.com",
+      "usuario@dominio.com"
+    ];
 
-    function verificar() {
-      const email = document.getElementById("email").value.toLowerCase();
+    function verificarAcesso() {
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const videoContainer = document.getElementById("video-container");
+      
       if (emailsAutorizados.includes(email)) {
-        document.getElementById("video").style.display = "block";
+        videoContainer.style.display = "block";
       } else {
-        alert("Acesso negado. E-mail não autorizado.");
+        alert("❌ Acesso negado. Este e-mail não está autorizado.");
+        videoContainer.style.display = "none";
       }
     }
   </script>
