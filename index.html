@@ -2,49 +2,184 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Vídeo Privado</title>
+  <title>Sistema de Vídeos Privados</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       max-width: 800px;
       margin: 0 auto;
       padding: 20px;
-      text-align: center; /* Centraliza o texto e elementos inline */
+      text-align: center;
+    }
+    .form-group {
+      margin: 15px 0;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background-color: #45a049;
     }
     #video-container {
       display: none;
-      margin: 20px auto; /* Centraliza o container */
-      width: fit-content; /* Ajusta a largura ao conteúdo */
+      margin: 20px auto;
     }
-    input, button {
+    #admin-panel {
+      margin-top: 30px;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
       padding: 8px;
-      margin: 5px 0;
+      text-align: left;
     }
-    video {
-      display: block; /* Remove espaço extra abaixo do vídeo */
-      margin: 0 auto; /* Centraliza o vídeo dentro do container */
+    th {
+      background-color: #f2f2f2;
     }
   </style>
 </head>
 <body>
-  <h2>🔐 Acesso ao Vídeo Privado</h2>
-  <input type="email" id="email" placeholder="Digite seu e-mail autorizado">
-  <button onclick="verificarAcesso()">Acessar Vídeo</button>
+  <h1>🔐 Sistema de Vídeos Privados</h1>
+  
+  <div id="access-panel">
+    <h2>Acesso ao Vídeo</h2>
+    <div class="form-group">
+      <label for="login-email">E-mail:</label>
+      <input type="email" id="login-email" placeholder="Digite seu e-mail cadastrado">
+    </div>
+    <button onclick="verificarAcesso()">Acessar Vídeo</button>
+  </div>
 
   <div id="video-container">
+    <h3>Vídeo Exclusivo</h3>
     <video width="640" height="360" controls>
       <source src="videot.mp4" type="video/mp4">
       Seu navegador não suporta vídeo HTML5.
     </video>
   </div>
 
+  <div id="registration-panel">
+    <h2>Cadastre-se para Acesso</h2>
+    <div class="form-group">
+      <label for="nome">Nome Completo:</label>
+      <input type="text" id="nome" required>
+    </div>
+    <div class="form-group">
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" required>
+    </div>
+    <div class="form-group">
+      <label for="cidade">Cidade:</label>
+      <input type="text" id="cidade" required>
+    </div>
+    <div class="form-group">
+      <label for="estado">Estado:</label>
+      <select id="estado" required>
+        <option value="">Selecione...</option>
+        <option value="AC">Acre</option>
+        <option value="AL">Alagoas</option>
+        <!-- Adicione todos os estados -->
+      </select>
+    </div>
+    <button onclick="cadastrarUsuario()">Cadastrar</button>
+  </div>
+
+  <div id="admin-panel">
+    <h2>Painel de Controle</h2>
+    <button onclick="mostrarUsuarios()">Mostrar Usuários Cadastrados</button>
+    <div id="users-list"></div>
+  </div>
+
   <script>
-    const emailsAutorizados = [
-      "teste@email.com", 
-      "exemplo@gmail.com",
-      "usuario@dominio.com"
-    ];
+    // Carrega usuários do localStorage ou cria array vazio
+    let usuariosCadastrados = JSON.parse(localStorage.getItem('usuarios')) || [];
+
+    function cadastrarUsuario() {
+      const usuario = {
+        nome: document.getElementById('nome').value.trim(),
+        email: document.getElementById('email').value.trim().toLowerCase(),
+        cidade: document.getElementById('cidade').value.trim(),
+        estado: document.getElementById('estado').value,
+        dataCadastro: new Date().toLocaleString()
+      };
+
+      // Verifica se e-mail já existe
+      if (usuariosCadastrados.some(u => u.email === usuario.email)) {
+        alert('Este e-mail já está cadastrado!');
+        return;
+      }
+
+      usuariosCadastrados.push(usuario);
+      localStorage.setItem('usuarios', JSON.stringify(usuariosCadastrados));
+      
+      alert('Cadastro realizado com sucesso!');
+      document.getElementById('nome').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('cidade').value = '';
+      document.getElementById('estado').value = '';
+    }
 
     function verificarAcesso() {
-      const email = document.getElementById("email").value.trim().toLowerCase();
-      const videoContainer = document.getElementById("video-container
+      const email = document.getElementById('login-email').value.trim().toLowerCase();
+      const usuario = usuariosCadastrados.find(u => u.email === email);
+      
+      if (usuario) {
+        document.getElementById('video-container').style.display = 'block';
+        // Registra o acesso
+        if (!usuario.acessos) usuario.acessos = [];
+        usuario.acessos.push(new Date().toLocaleString());
+        localStorage.setItem('usuarios', JSON.stringify(usuariosCadastrados));
+      } else {
+        alert('E-mail não cadastrado. Por favor, cadastre-se primeiro.');
+      }
+    }
+
+    function mostrarUsuarios() {
+      const usersList = document.getElementById('users-list');
+      if (usuariosCadastrados.length === 0) {
+        usersList.innerHTML = '<p>Nenhum usuário cadastrado ainda.</p>';
+        return;
+      }
+
+      let html = '<table><tr><th>Nome</th><th>E-mail</th><th>Cidade/UF</th><th>Data Cadastro</th><th>Acessos</th></tr>';
+      
+      usuariosCadastrados.forEach(usuario => {
+        html += `<tr>
+          <td>${usuario.nome}</td>
+          <td>${usuario.email}</td>
+          <td>${usuario.cidade}/${usuario.estado}</td>
+          <td>${usuario.dataCadastro}</td>
+          <td>${usuario.acessos ? usuario.acessos.length : 0}</td>
+        </tr>`;
+      });
+
+      html += '</table>';
+      usersList.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
