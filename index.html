@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Sistema de Vídeos Privados</title>
+  <title>Warm up IP SB vs LP</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -108,11 +108,12 @@
     <button onclick="cadastrarUsuario()">Cadastrar</button>
   </div>
 
-  <div id="admin-panel">
-    <h2>Painel de Controle</h2>
-    <button onclick="mostrarUsuarios()">Mostrar Usuários Cadastrados</button>
-    <div id="users-list"></div>
-  </div>
+<div id="admin-panel" style="display:none;">
+  <h2>Painel de Controle</h2>
+  <button onclick="mostrarUsuarios()">Mostrar Usuários Cadastrados</button>
+  <div id="users-list"></div>
+</div>
+
 
   <script>
     // Carrega usuários do localStorage ou cria array vazio
@@ -183,3 +184,77 @@
   </script>
 </body>
 </html>
+<script>
+  // E-mail do administrador
+  const adminEmail = "admin@exemplo.com";  // Altere aqui se quiser outro e-mail de admin
+
+  let usuariosCadastrados = JSON.parse(localStorage.getItem('usuarios')) || [];
+
+  function cadastrarUsuario() {
+    const usuario = {
+      nome: document.getElementById('nome').value.trim(),
+      email: document.getElementById('email').value.trim().toLowerCase(),
+      cidade: document.getElementById('cidade').value.trim(),
+      estado: document.getElementById('estado').value,
+      dataCadastro: new Date().toLocaleString()
+    };
+
+    if (usuariosCadastrados.some(u => u.email === usuario.email)) {
+      alert('Este e-mail já está cadastrado!');
+      return;
+    }
+
+    usuariosCadastrados.push(usuario);
+    localStorage.setItem('usuarios', JSON.stringify(usuariosCadastrados));
+    
+    alert('Cadastro realizado com sucesso!');
+    document.getElementById('nome').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('cidade').value = '';
+    document.getElementById('estado').value = '';
+  }
+
+  function verificarAcesso() {
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
+    const usuario = usuariosCadastrados.find(u => u.email === email);
+
+    if (usuario) {
+      document.getElementById('video-container').style.display = 'block';
+
+      // Mostrar painel admin apenas para e-mail autorizado
+      if (email === adminEmail) {
+        document.getElementById('admin-panel').style.display = 'block';
+      }
+
+      // Registra acesso
+      if (!usuario.acessos) usuario.acessos = [];
+      usuario.acessos.push(new Date().toLocaleString());
+      localStorage.setItem('usuarios', JSON.stringify(usuariosCadastrados));
+    } else {
+      alert('E-mail não cadastrado. Por favor, cadastre-se primeiro.');
+    }
+  }
+
+  function mostrarUsuarios() {
+    const usersList = document.getElementById('users-list');
+    if (usuariosCadastrados.length === 0) {
+      usersList.innerHTML = '<p>Nenhum usuário cadastrado ainda.</p>';
+      return;
+    }
+
+    let html = '<table><tr><th>Nome</th><th>E-mail</th><th>Cidade/UF</th><th>Data Cadastro</th><th>Acessos</th></tr>';
+    
+    usuariosCadastrados.forEach(usuario => {
+      html += `<tr>
+        <td>${usuario.nome}</td>
+        <td>${usuario.email}</td>
+        <td>${usuario.cidade}/${usuario.estado}</td>
+        <td>${usuario.dataCadastro}</td>
+        <td>${usuario.acessos ? usuario.acessos.length : 0}</td>
+      </tr>`;
+    });
+
+    html += '</table>';
+    usersList.innerHTML = html;
+  }
+</script>
