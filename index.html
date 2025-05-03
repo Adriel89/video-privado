@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Vídeo Privado</title>
+</head>
+<body>
+  <h2>🔐 Acesso ao vídeo</h2>
+  <input type="email" id="email" placeholder="Digite seu e-mail autorizado">
+  <button onclick="verificar()">Entrar</button>
+
+  <div id="video" style="display:none; margin-top:20px;">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/SEU_VIDEO_ID"
+      frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <script>
+    const emailsAutorizados = ["teste@email.com", "exemplo@gmail.com"];
+
+    function verificar() {
+      const email = document.getElementById("email").value.toLowerCase();
+      if (emailsAutorizados.includes(email)) {
+        document.getElementById("video").style.display = "block";
+      } else {
+        alert("Acesso negado. E-mail não autorizado.");
+      }
+    }
+  </script>
+</body>
+</html>
